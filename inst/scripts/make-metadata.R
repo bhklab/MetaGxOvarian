@@ -55,12 +55,12 @@ main.data <- data.frame(
     "MetaGxOvarian/GSE51088.rda",     "MetaGxOvarian/PMID15897565.rda", "MetaGxOvarian/PMID17290060.rda",
     "MetaGxOvarian/PMID19318476.rda", "MetaGxOvarian/TCGAOVARIAN.rda"
   ),
-  BiocVersion="3.4",
+  BiocVersion="3.6",
   Genome=c("Illumina humanRef-8 v2.0", "Affymetrix HG-U133Plus2", "Affymetrix HG-U133A", "Affymetrix Hu6800"," Agilent  G4100A cDNA","Affymetrix HG-U133Plus2",
            "SWEGENE H_v2.1.1_27k","Agilent G4110B","Operon v3 two-color","Affymetrix HG-U133A","Agilent G4112A","Affymetrix HG-U133Plus2","Affymetrix HG-U133Plus2","Affymetrix HG-U133Plus2",
            "Affymetrix HG-U133A","TaqMan qRT-PCR","Affymetrix HG-U133Plus2","Agilent G4112F","Agilent G4112F","Affymetrix HG-U133Plus2","ABI Human Genome Survey Microarray Version 2","Agilent G4110B",
            "Affymetrix HG-U133A","Affymetrix HG-U133A","Affymetrix HG-U133A", "Affymetrix HT_HG-U133A"),
-  SourceType="RDA",
+  SourceType="RData",
   SourceUrl=c("https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-386/", paste0("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", infoString[2:22]),
               "https://www.ncbi.nlm.nih.gov/pubmed/15897565", "https://www.ncbi.nlm.nih.gov/pubmed/17290060",
               "https://www.ncbi.nlm.nih.gov/pubmed/19318476", "https://www.ncbi.nlm.nih.gov/pubmed/21720365"),
@@ -71,7 +71,7 @@ main.data <- data.frame(
   DataProvider=c("Array Express", rep("GEO", 21), rep("PubMed", 3), "GDC"),
   Maintainer="Michael Zon <michaelzon7@gmail.com>",
   RDataClass="ExpressionSet",
-  DispatchClass="ExpressionSet",
+  DispatchClass="Rda",
   Tags = "ovarian cancer expression",
   ResourceName = c(paste0(infoString, ".rda"))
   )
