@@ -56,7 +56,7 @@ main.data <- data.frame(
     "MetaGxOvarian/PMID19318476.rda", "MetaGxOvarian/TCGAOVARIAN.rda"
   ),
   BiocVersion="3.6",
-  Genome=c("Illumina humanRef-8 v2.0", "Affymetrix HG-U133Plus2", "Affymetrix HG-U133A", "Affymetrix Hu6800"," Agilent  G4100A cDNA","Affymetrix HG-U133Plus2",
+  Genome=c("Illumina humanRef-8 v2.0", "Affymetrix HG-U133Plus2", "Affymetrix HG-U133A", "Affymetrix Hu6800","Agilent  G4100A cDNA","Affymetrix HG-U133Plus2",
            "SWEGENE H_v2.1.1_27k","Agilent G4110B","Operon v3 two-color","Affymetrix HG-U133A","Agilent G4112A","Affymetrix HG-U133Plus2","Affymetrix HG-U133Plus2","Affymetrix HG-U133Plus2",
            "Affymetrix HG-U133A","TaqMan qRT-PCR","Affymetrix HG-U133Plus2","Agilent G4112F","Agilent G4112F","Affymetrix HG-U133Plus2","ABI Human Genome Survey Microarray Version 2","Agilent G4110B",
            "Affymetrix HG-U133A","Affymetrix HG-U133A","Affymetrix HG-U133A", "Affymetrix HT_HG-U133A"),
