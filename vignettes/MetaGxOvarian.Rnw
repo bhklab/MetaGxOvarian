@@ -37,6 +37,7 @@
 
 \author[1,2]{Deena M.A. Gendoo}
 \author[1]{Natchar Ratanasirigulchai}
+\author[1]{Michael Zon}
 \author[2]{Gregory Chen}
 \author[3,4]{Levi Waldron}
 \author[1,2]{Benjamin Haibe-Kains\thanks{benjamin.haibe.kains@utoronto.ca }}
@@ -54,20 +55,13 @@
 %------------------------------------------------------------
 
 The MetaGxOvarian package is a compendium of Ovarian Cancer datasets.
-The package is publicly available and can be installed from CRAN into R version 2.13.0 or higher.
+The package is publicly available and can be installed from Bioconductor into R version 3.4.1 or higher.
 
 To install the MetaGxOvarian package from Bioconductor:
-<<installAndLoadPackagesFromBioconductor,eval=FALSE,results='hide',message=FALSE>>=
-knitr::opts_chunk$set(eval=TRUE,cache=TRUE)
+<<installAndLoadPackagesFromBioconductor,eval=FALSE,results='hide',message=FALSE, warning = F>>=
+knitr::opts_chunk$set(eval=TRUE,cache=TRUE, warning = F)
 source("http://bioconductor.org/biocLite.R")
 biocLite("MetaGxOvarian")
-@
-
-Please also load other libraries needed:
-<<LoadPackagesExtra,eval=FALSE,results='hide',message=FALSE>>=
-library(xtable)
-library(knitr)
-library(tools)
 @
 
 
@@ -77,7 +71,7 @@ library(tools)
 First we load the MetaGxOvarian package into the workspace.
 
 To load the packages into R, please use the following commands:
-<<LoadPackages,eval=TRUE,comment="##",results='hide',message=FALSE>>=
+<<LoadPackages,eval=TRUE,comment="##",results='hide',message=FALSE, warning = F>>=
 library(MetaGxOvarian)
 source(system.file("extdata", "patientselection.config", package="MetaGxOvarian"))
 min.number.of.genes <- 0
