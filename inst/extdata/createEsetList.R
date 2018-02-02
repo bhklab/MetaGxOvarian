@@ -8,10 +8,11 @@
 
 # inputArgs <- commandArgs(TRUE)
 
-library(genefilter)
+#library(genefilter)
 library(survival)
 library(logging)
 library(Biobase)
+library(ExperimentHub)
 
 # if (length(inputArgs) >=3) {
 #     kConfigFile <- inputArgs[1]
@@ -31,11 +32,11 @@ library(Biobase)
 
 # loginfo("Inside script createEsetList.R - inputArgs =")
 # loginfo(inputArgs)
-package.name <- "MetaGxOvarian"
+#package.name <- "MetaGxOvarian"
 
-if (!exists("package.name")) package.name <- "MetaGxOvarian"
+#if (!exists("package.name")) package.name <- "MetaGxOvarian"
 
-library(package.name, character.only=TRUE)
+#library(package.name, character.only=TRUE)
 
 # loginfo(paste("Loading", package.name, sessionInfo()$otherPkgs[[package.name]]$Version))
 
@@ -86,20 +87,36 @@ expandProbesets <- function (eset, sep = "///"){
 ## -----------------------------------------------------------------------------
 ##load the esets
 ## -----------------------------------------------------------------------------
-data(list=data(package=package.name)[[3]][,3])
+
+#library(ExperimentHub)
+hub = ExperimentHub()
+possibleDates(hub)
+ovarianData = query(hub, "MetaGxOvarian")
+esets <- list()
+for(i in 1:length(ovarianData))
+{
+  #if(i != 5)
+  #{
+    esets[[i]] = ovarianData[[names(ovarianData)[i]]]
+    names(esets)[i] = ovarianData[i]$title
+  #}
+}
+#if(is.null(esets[[5]]))
+# esets[[5]] = NULL
+
+#data(list=data(package=package.name)[[3]][,3])
 # lapply(paste("./esets/mapped_esets/", list.files("./esets/mapped_esets"), sep=""), load, .GlobalEnv)
 
 # strEsets <- ls(pattern="^.*_eset$")
 # strEsets <- sub(pattern="_eset.rda", x=list.files("./esets/mapped_esets"), replacement="")
-strEsets <- as.character(data(package=package.name)[[3]][,3])
-esets <- list()
+#strEsets <- as.character(data(package=package.name)[[3]][,3])
 ## -----------------------------------------------------------------------------
 ##Explicit removal of datasets:
 ## -----------------------------------------------------------------------------
-if(exists("remove.datasets") && any(strEsets %in% remove.datasets)){
-    remove.datasets <- remove.datasets[remove.datasets %in% strEsets]
+if(exists("remove.datasets") && any(names(esets) %in% remove.datasets)){
+    remove.datasets <- remove.datasets[remove.datasets %in% names(esets)]
     loginfo(paste("Removing ", paste(remove.datasets, collapse=", "), " (remove.datasets)"))
-    strEsets <- strEsets[!strEsets %in% remove.datasets]
+    names(esets) <- names(esets)[!names(esets) %in% remove.datasets]
 }
 
 ## -----------------------------------------------------------------------------
@@ -126,6 +143,7 @@ delim <- ":"   ##This is the delimiter used to specify dataset:sample,
 
 if(exists("remove.duplicates") && remove.duplicates == TRUE){
     ## same as used in metagx getbrcadata
+  #load("inst\\extdata\\BenDuplicate.rda")
     load(system.file("extdata", "BenDuplicate.rda", package="MetaGxOvarian"))
 
   rmix <- duplicates
@@ -160,8 +178,8 @@ if(exists("remove.duplicates") && remove.duplicates == TRUE){
 }
 
 message("Clean up the esets.")
-for (strEset in strEsets){
-    eset <- get(strEset)
+for (i in 1:length(esets)){
+  eset <- esets[[i]]
     ##Deal with genes which had a single probe mapping to multiple genes
 #     if (exists("probes.not.mapped.uniquely")){
 #         if(identical(probes.not.mapped.uniquely, "drop")){
@@ -237,12 +255,12 @@ for (strEset in strEsets){
         remove[sampleNames(eset) %in% remove.samples] <- TRUE
     ##do the actual removal
     eset <- eset[, !remove]
-    if (exists("considered.datasets") && !(strEset %in% considered.datasets))
-    {
-        message(paste("excluding",strEset,
-                      "(considered.datasets)"))
-        next
-    }
+    #if (exists("considered.datasets") && !(strEset %in% considered.datasets))
+    #{
+    #    message(paste("excluding",strEset,
+    #                  "(considered.datasets)"))
+    #    next
+    #}
     ##include study if it has enough samples and events:
     if (exists("min.number.of.events") && !is.na(min.number.of.events)
         && exists("min.sample.size") && !is.na(min.sample.size)
@@ -250,25 +268,25 @@ for (strEset in strEsets){
         && sum(eset$vital_status == "deceased") < min.number.of.events
         || ncol(eset) < min.sample.size)
     {
-        message(paste("excluding",strEset,
+        message(paste("excluding",
                       "(min.number.of.events or min.sample.size)"))
         next
     }
     if (exists("min.number.of.genes") && nrow(eset) < min.number.of.genes) {
-        message(paste("excluding",strEset,"(min.number.of.genes)"))
+        message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(min.number.of.genes)"))
         next
     }
     if (exists("remove.retracted") && remove.retracted && length(grep("retracted", experimentData(eset)@other$warnings$warnings)) > 0){
-        message(paste("excluding",strEset,"(remove.retracted)"))
+        message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(remove.retracted)"))
         next
     }
     if (exists("remove.subsets") && remove.subsets && length(grep("subset", experimentData(eset)@other$warnings$warnings)) > 0){
-        message(paste("excluding",strEset,"(remove.subsets)"))
+        message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(remove.subsets)"))
         next
     }
-    message(paste("including",strEset))
+    message(paste("including experiment hub dataset",ovarianData[i]$title))
     ##    featureNames(eset) <- make.names(featureNames(eset))  ##should not do this, it is irreversible.
-    esets[[strEset]] <- eset
+    esets[[i]] <- eset
     rm(eset)
 }
 
@@ -305,3 +323,5 @@ if (length(ids.with.missing.data) > 0 && exists("impute.missing") && impute.miss
 
 if (exists("kOutputFile"))
     save(esets,file=kOutputFile)
+
+
