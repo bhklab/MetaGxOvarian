@@ -7,7 +7,7 @@ Author: Deena M.A. Gendoo  <deena.gendoo@utoronto.ca>, Michael Zon <michaelzon7@
 Maintainer: Michael Zon <michaelzon7@gmail.com>
 Description: A collection of Ovarian Cancer Transcriptomic Datasets that are part of the MetaGxData package compendium. 
 License: Artistic-2.0
-Depends: Biobase, lattice, R (>= 3.4.1)
+Depends: Biobase, lattice, logging, ExperimentHub, R (>= 3.5.0)
 Suggests: knitr
 NeedsCompilation: no
 VignetteBuilder: knitr
