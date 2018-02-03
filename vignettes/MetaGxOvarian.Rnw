@@ -8,7 +8,7 @@
 
 %%%http://yihui.name/knitr/options/
 
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage[T1]{fontenc}
@@ -74,21 +74,23 @@ First we load the MetaGxOvarian package into the workspace.
 To load the packages into R, please use the following commands:
 <<LoadPackages,eval=TRUE,comment="##",results='hide',message=FALSE, warning = F>>=
 library(MetaGxOvarian)
+#source(system.file("extdata", "patientselection.config", package="MetaGxOvarian"))
+#min.number.of.genes <- 0
+#rm(remove.duplicates)
+#source(system.file("extdata", "createEsetList.R", package="MetaGxOvarian"))
 esets = MetaGxOvarian::loadOvarianEsets()[[1]]
 @
 
-This will load 26 expression datasets, with patients selected according to the default settings in the patientselection.config file. Users can modify the file to filter and annotate gene expression datasets and individual samples within them based on the following criteria:
+This will load 26 expression datasets. Users can modify the parameters of the loadOvarianEsets function to adjust the datasets based on a variety of criteria. Some of which include:
 
 \begin{description}
 \item Datasets:  Conduct probe-gene mapping to select for the 'best' probe (default = TRUE)
 \item Datasets:  Retain only genes that are common across all platforms loaded (default = FALSE)
-\item Datasets:  Retain studies with a minimum sample size (default = 40)
-\item Datasets:  Retain studies with a minimum umber of genes (default = 1000)
-\item Datasets:  Retain studies with a minimum number of survival events
+\item Datasets:  Retain studies with a minimum sample size (default = 0)
+\item Datasets:  Retain studies with a minimum umber of genes (default = 0)
+\item Datasets:  Retain studies with a minimum number of survival events (default = 0)
 \item Datasets:  Remove duplicate samples (default = TRUE)
 \item Datasets:  Rescale genes to Z-scores (default = FALSE)
-\item Samples:  Ensure specific patient metadata is not missing
-\item Samples:  Filter samples by sample type (tumour, healthy, etc)
 \end{description}
 
 
@@ -163,7 +165,6 @@ nba<-pDataPercentSummaryTable
 gradient_colors = c("#ffffff","#ffffd9","#edf8b1","#c7e9b4","#7fcdbb",
                     "#41b6c4","#1d91c0","#225ea8","#253494","#081d58")
 
-library(lattice)
 nbamat<-as.matrix(nba)
 rownames(nbamat)<-nbamat[,1]
 nbamat<-nbamat[,-1]
