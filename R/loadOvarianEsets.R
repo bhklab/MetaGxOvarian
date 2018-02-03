@@ -71,9 +71,9 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
   ##load the esets
   ## -----------------------------------------------------------------------------
 
-  hub = ExperimentHub()
-  AnnotationHub::possibleDates(hub)
-  ovarianData = query(hub, "MetaGxOvarian")
+  hub = ExperimentHub::ExperimentHub()
+  #AnnotationHub::possibleDates(hub)
+  ovarianData = AnnotationHub::query(hub, "MetaGxOvarian")
   esets <- list()
   for(i in 1:length(ovarianData))
   {
@@ -109,7 +109,7 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
     }
     ##rescale to z-scores
     if(rescale == TRUE){
-      exprs(eset) <- t(scale(t(exprs(eset))))
+      Biobase::exprs(eset) <- t(scale(t(Biobase::exprs(eset))))
     }
 
     if(remove.duplicates == TRUE){
@@ -134,11 +134,11 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
       message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(min.number.of.genes)"))
       next
     }
-    if(remove.retracted && length(grep("retracted", experimentData(eset)@other$warnings$warnings)) > 0){
+    if(remove.retracted && length(grep("retracted", Biobase::experimentData(eset)@other$warnings$warnings)) > 0){
       message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(remove.retracted)"))
       next
     }
-    if(remove.subsets && length(grep("subset", experimentData(eset)@other$warnings$warnings)) > 0){
+    if(remove.subsets && length(grep("subset", Biobase::experimentData(eset)@other$warnings$warnings)) > 0){
       message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(remove.subsets)"))
       next
     }
@@ -159,13 +159,13 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
   }
 
   ids.with.missing.data <- which(sapply(esets, function(X)
-    sum(!complete.cases(exprs(X))) > 0))
+    sum(!complete.cases(Biobase::exprs(X))) > 0))
   message(paste("Ids with missing data:", paste(names(ids.with.missing.data),
                                                 collapse=", ")))
 
   if (length(ids.with.missing.data) > 0 && impute.missing) {
     for (i in ids.with.missing.data) {
-      exprs(esets[[i]]) = impute.knn(exprs(esets[[i]]))$data
+      Biobase::exprs(esets[[i]]) = impute::impute.knn(Biobase::exprs(esets[[i]]))$data
     }
   }
 
