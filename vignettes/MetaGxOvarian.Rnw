@@ -1,8 +1,8 @@
-%\VignetteIndexEntry{PharmacoGx: an R package for analysis of large pharmacogenomic datasets}
+%\VignetteIndexEntry{MetaGxOvarian: a package for ovarian cancer gene expression analysis}
 %\VignetteDepends{xtable}
 %\VignetteSuggests{}
 %\VignetteKeywords{}
-%\VignettePackage{PharmacoGx}
+%\VignettePackage{MetaGxOvarian}
 
 \documentclass[11pt]{article}
 
