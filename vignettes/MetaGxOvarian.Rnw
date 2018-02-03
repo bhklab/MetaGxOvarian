@@ -13,6 +13,7 @@
 \usepackage{microtype}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
+\usepackage{lmodern}
 \usepackage{geometry}
 \usepackage{authblk}
 \geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
@@ -73,10 +74,7 @@ First we load the MetaGxOvarian package into the workspace.
 To load the packages into R, please use the following commands:
 <<LoadPackages,eval=TRUE,comment="##",results='hide',message=FALSE, warning = F>>=
 library(MetaGxOvarian)
-source(system.file("extdata", "patientselection.config", package="MetaGxOvarian"))
-min.number.of.genes <- 0
-rm(remove.duplicates)
-source(system.file("extdata", "createEsetList.R", package="MetaGxOvarian"))
+esets = MetaGxOvarian::loadOvarianEsets()[[1]]
 @
 
 This will load 26 expression datasets, with patients selected according to the default settings in the patientselection.config file. Users can modify the file to filter and annotate gene expression datasets and individual samples within them based on the following criteria:
