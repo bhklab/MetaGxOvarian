@@ -1,28 +1,36 @@
 #' Function to load ovarian cancer expression sets from the Experiment Hub
 #'
 #' This function returns ovarian cancer datasets from the hub and a vector of patients from the datasets that are most likely duplicates
-#' @param remove.duplicates remove patients with a Spearman correlation greater than or equal to 0.98 with other patient expression profiles (default TRUE)
-#' @param quantile.cutoff A nueric between 0 and 1 specifying to remove genes with standard deviation below the required quantile (default 0)
+#' @param removeDuplicates remove patients with a Spearman correlation greater than or equal to 0.98 with other patient expression profiles (default TRUE)
+#' @param quantileCutoff A nueric between 0 and 1 specifying to remove genes with standard deviation below the required quantile (default 0)
 #' @param rescale apply centering and scaling to the expression sets (default FALSE)
-#' @param min.number.of.genes an integer specifying to remove expression sets with less genes than this number (default 0)
-#' @param min.number.of.events an integer specifying how man survival events must be in the dataset to keep the dataset (default 0)
-#' @param min.sample.size an integer specifying the minimum number of patients required in an eset (default 0)
-#' @param remove.retracted remove datasets from retracted papers (default TRUE, currently just PMID17290060 dataset)
-#' @param remove.subsets remove datasets that are a subset of other datasets (defeault TRUE, currently just PMID19318476)
-#' @param keep.common.only remove probes not common to all datasets (default FALSE)
-#' @param impute.missing remove patients from datasets with missing expression values
+#' @param minNumberGenes an integer specifying to remove expression sets with less genes than this number (default 0)
+#' @param minNumberEvents an integer specifying how man survival events must be in the dataset to keep the dataset (default 0)
+#' @param minSampleSize an integer specifying the minimum number of patients required in an eset (default 0)
+#' @param removeRetracted remove datasets from retracted papers (default TRUE, currently just PMID17290060 dataset)
+#' @param removeSubsets remove datasets that are a subset of other datasets (defeault TRUE, currently just PMID19318476)
+#' @param keepCommonOnly remove probes not common to all datasets (default FALSE)
+#' @param imputeMissing remove patients from datasets with missing expression values
 #' @return a list with 2 elements. The First element named esets contains the datasets. The second element named duplicates contains
 #' a vector with patient IDs for the duplicate patients (those with  Spearman correlation greater than or equal to 0.98 with other patient expression profiles).
 #' @export
+#' @importFrom Biobase esApply featureNames sampleNames exprs pData experimentData
+#' @importFrom lattice levelplot
+#' @importFrom impute impute.knn
+#' @importFrom ExperimentHub ExperimentHub
+#' @importFrom AnnotationHub query
+#' @importFrom stats complete.cases sd quantile
 #' @examples
 #'
 #' esetsAndDups = loadOvarianEsets()
 
 
-loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, rescale = FALSE, min.number.of.genes = 0,
-                            min.number.of.events = 0, min.sample.size = 0, remove.retracted = TRUE, remove.subsets = TRUE,
-                            keep.common.only = FALSE, impute.missing = FALSE)
+loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale = FALSE, minNumberGenes = 0,
+                            minNumberEvents = 0, minSampleSize = 0, removeRetracted = TRUE, removeSubsets = TRUE,
+                            keepCommonOnly = FALSE, imputeMissing = FALSE)
 {
+  duplicates = NULL
+  #if(getRversion() >= "2.15.1")  utils::globalVariables(c("."), add = F)
   ## -----------------------------------------------------------------------------
   ## needed functions
   ## -----------------------------------------------------------------------------
@@ -31,14 +39,14 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
       stop("require 0 <= q < 1")
     if (!identical(class(object) == "ExpressionSet", TRUE))
       stop("object must be an ExpressionSet")
-    gene.sd <- Biobase::esApply(object,1,sd, na.rm=TRUE)
-    gene.quantile <- stats::quantile(gene.sd, probs=q)
-    actual.makescutoff <- sum(gene.sd < gene.quantile) / length(gene.sd)
+    geneSd <- Biobase::esApply(object,1,sd, na.rm=TRUE)
+    gene.quantile <- stats::quantile(geneSd, probs=q)
+    actual.makescutoff <- sum(geneSd < gene.quantile) / length(geneSd)
     ##make sure the correct number of genes are getting filtered:
     if (abs(q - actual.makescutoff) > 0.01){
       stop("Not scaling this object, likely pre-scaled.")
     }else{
-      object <- object[gene.sd > gene.quantile, ]
+      object <- object[geneSd > gene.quantile, ]
     }
     return(object)
   }
@@ -58,7 +66,7 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
     x <- lapply(Biobase::featureNames(eset), function(x) strsplit(x, sep)[[1]])
     eset <- eset[order(sapply(x, length)), ]
     x <- lapply(Biobase::featureNames(eset), function(x) strsplit(x, sep)[[1]])
-    idx <- unlist(sapply(1:length(x), function(i) rep(i, length(x[[i]]))))
+    idx <- unlist(sapply(x, function(i) rep(i, length(x))))
     xx <- !duplicated(unlist(x))
     idx <- idx[xx]
     x <- unlist(x)[xx]
@@ -73,7 +81,7 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
 
   hub = ExperimentHub::ExperimentHub()
   #AnnotationHub::possibleDates(hub)
-  ovarianData = AnnotationHub::query(hub, "MetaGxOvarian")
+  ovarianData = query(hub, "MetaGxOvarian")
   esets <- list()
   for(i in 1:length(ovarianData))
   {
@@ -89,7 +97,7 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
   ## same as used in metagx getbrcadata
   #load("inst\\extdata\\BenDuplicate.rda")
   #source(system.file("extdata", "patientselection.config", package="MetaGxOvarian"))
-  load(system.file("extdata", "BenDuplicate.rda", package="MetaGxOvarian"))
+  load(system.file("extdata", "duplicates.rda", package="MetaGxOvarian"))
 
   rmix <- duplicates
   ii <- 1
@@ -104,15 +112,15 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
     eset <- esets[[i]]
 
     ##filter genes with standard deviation below the required quantile
-    if(quantile.cutoff > 0 && quantile.cutoff < 1){
-      eset <- filterQuantile(eset, q=quantile.cutoff)
+    if(quantileCutoff > 0 && quantileCutoff < 1){
+      eset <- filterQuantile(eset, q=quantileCutoff)
     }
     ##rescale to z-scores
     if(rescale == TRUE){
       Biobase::exprs(eset) <- t(scale(t(Biobase::exprs(eset))))
     }
 
-    if(remove.duplicates == TRUE){
+    if(removeDuplicates == TRUE){
       keepix <- setdiff(Biobase::sampleNames(eset), rmix)
       Biobase::exprs(eset) <- Biobase::exprs(eset)[, keepix, drop=FALSE]
       Biobase::pData(eset) <- Biobase::pData(eset)[keepix, , drop=FALSE]
@@ -120,26 +128,26 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
     }
 
     ##include study if it has enough samples and events:
-    if (!is.na(min.number.of.events)
-        && exists("min.sample.size") && !is.na(min.sample.size)
-        && min.number.of.events > 0
-        && sum(eset$vital_status == "deceased") < min.number.of.events
-        || ncol(eset) < min.sample.size)
+    if (!is.na(minNumberEvents)
+        && exists("minSampleSize") && !is.na(minSampleSize)
+        && minNumberEvents > 0
+        && sum(eset$vital_status == "deceased") < minNumberEvents
+        || ncol(eset) < minSampleSize)
     {
       message(paste("excluding",
-                    "(min.number.of.events or min.sample.size)"))
+                    "(minNumberEvents or minSampleSize)"))
       next
     }
-    if(nrow(eset) < min.number.of.genes) {
-      message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(min.number.of.genes)"))
+    if(nrow(eset) < minNumberGenes) {
+      message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(minNumberGenes)"))
       next
     }
-    if(remove.retracted && length(grep("retracted", Biobase::experimentData(eset)@other$warnings$warnings)) > 0){
-      message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(remove.retracted)"))
+    if(removeRetracted && length(grep("retracted", Biobase::experimentData(eset)@other$warnings$warnings)) > 0){
+      message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(removeRetracted)"))
       next
     }
-    if(remove.subsets && length(grep("subset", Biobase::experimentData(eset)@other$warnings$warnings)) > 0){
-      message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(remove.subsets)"))
+    if(removeSubsets && length(grep("subset", Biobase::experimentData(eset)@other$warnings$warnings)) > 0){
+      message(paste("excluding experiment hub dataset",ovarianData[i]$title,"(removeSubsets)"))
       next
     }
     message(paste("including experiment hub dataset",ovarianData[i]$title))
@@ -149,7 +157,7 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
   }
 
   ##optionally take the intersection of genes common to all platforms:
-  if(keep.common.only){
+  if(keepCommonOnly){
     features.per.dataset <- lapply(esets, Biobase::featureNames)
     intersect.genes <- intersectMany(features.per.dataset)
     esets <- lapply(esets, function(eset){
@@ -163,7 +171,7 @@ loadOvarianEsets = function(remove.duplicates = TRUE, quantile.cutoff = 0, resca
   message(paste("Ids with missing data:", paste(names(ids.with.missing.data),
                                                 collapse=", ")))
 
-  if (length(ids.with.missing.data) > 0 && impute.missing) {
+  if (length(ids.with.missing.data) > 0 && imputeMissing) {
     for (i in ids.with.missing.data) {
       Biobase::exprs(esets[[i]]) = impute::impute.knn(Biobase::exprs(esets[[i]]))$data
     }
