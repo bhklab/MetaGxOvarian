@@ -57,16 +57,16 @@ loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale
     if (length(lst)==2){
       return(intersect(lst[[1]],lst[[2]]))
     }else{
-      return(intersectMany(c(list(intersect(lst[[1]],lst[[2]])),lst[-1:-2])))
+      return(intersectMany(c(list(intersect(lst[[1]],lst[[2]])),lst[seq(-1, -2)])))
     }
   }
 
   ##Split out non-specific probe sets
   expandProbesets <- function (eset, sep = "///"){
     x <- lapply(Biobase::featureNames(eset), function(x) strsplit(x, sep)[[1]])
-    eset <- eset[order(sapply(x, length)), ]
+    eset <- eset[order(vapply(x, length, numeric(1))), ]
     x <- lapply(Biobase::featureNames(eset), function(x) strsplit(x, sep)[[1]])
-    idx <- unlist(sapply(x, function(i) rep(i, length(x))))
+    idx <- unlist(vapply(x, function(i) rep(i, length(x)), character(length(x))))
     xx <- !duplicated(unlist(x))
     idx <- idx[xx]
     x <- unlist(x)[xx]
@@ -83,7 +83,7 @@ loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale
   #AnnotationHub::possibleDates(hub)
   ovarianData = query(hub, "MetaGxOvarian")
   esets <- list()
-  for(i in 1:length(ovarianData))
+  for(i in seq_len(length(ovarianData)))
   {
     esets[[i]] = ovarianData[[names(ovarianData)[i]]]
     names(esets)[i] = ovarianData[i]$title
@@ -108,7 +108,7 @@ loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale
   rmix <- unique(unlist(rmix))
 
   message("Clean up the esets.")
-  for (i in 1:length(esets)){
+  for (i in seq_len(length(esets))){
     eset <- esets[[i]]
 
     ##filter genes with standard deviation below the required quantile
@@ -166,8 +166,8 @@ loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale
     })
   }
 
-  ids.with.missing.data <- which(sapply(esets, function(X)
-    sum(!complete.cases(Biobase::exprs(X))) > 0))
+  ids.with.missing.data <- which(vapply(esets, function(X)
+    sum(!complete.cases(Biobase::exprs(X))) > 0, numeric(1)) == 1)
   message(paste("Ids with missing data:", paste(names(ids.with.missing.data),
                                                 collapse=", ")))
 
