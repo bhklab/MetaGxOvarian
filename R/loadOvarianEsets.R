@@ -121,9 +121,18 @@ loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale
     }
 
     if(removeDuplicates == TRUE){
-      keepix <- setdiff(Biobase::sampleNames(eset), rmix)
-      Biobase::exprs(eset) <- Biobase::exprs(eset)[, keepix, drop=FALSE]
-      Biobase::pData(eset) <- Biobase::pData(eset)[keepix, , drop=FALSE]
+      keepix <- setdiff(colnames(eset@assayData$exprs), rmix)
+      if(length(keepix) != length(colnames(eset@assayData$exprs)))
+      {
+        newEset = ExpressionSet(Biobase::exprs(eset)[, keepix, drop=FALSE])
+        newEset@experimentData = eset@experimentData
+        newEset@phenoData = eset@phenoData
+        newEset@phenoData@data = Biobase::pData(eset)[keepix, , drop=FALSE]
+        newEset@featureData = eset@featureData
+        eset = newEset
+      }
+      #Biobase::exprs(eset) <- Biobase::exprs(eset)[, keepix, drop=FALSE]
+      #Biobase::pData(eset) <- Biobase::pData(eset)[keepix, , drop=FALSE]
 
     }
 
