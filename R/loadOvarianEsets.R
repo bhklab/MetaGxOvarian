@@ -81,7 +81,7 @@ loadOvarianEsets = function(removeDuplicates = TRUE, quantileCutoff = 0, rescale
 
   hub = ExperimentHub::ExperimentHub()
   #AnnotationHub::possibleDates(hub)
-  ovarianData = query(hub, "MetaGxOvarian")
+  ovarianData = query(hub, c("MetaGxOvarian", "ExpressionSet"))
   esets <- list()
   for(i in seq_len(length(ovarianData)))
   {
