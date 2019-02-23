@@ -4,3 +4,10 @@ CHANGES IN VERSION 0.99.0
 NEW FEATURES
 
     o This is the first iteration of the MetaGxOvarian package. It is essentially an updated version of the curatedOvarianData package with 5 additional datasets
+    
+CHANGES IN VERSION 1.01.0
+-------------------------
+
+NEW FEATURES
+
+    o loadOvarianDatasets function added which loads the summarizedExperiment objects instead of the outdated Esets
