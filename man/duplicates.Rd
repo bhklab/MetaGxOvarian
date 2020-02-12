@@ -1,5 +1,5 @@
-\name{dupplicates}
-\alias{dupplicates}
+\name{duplicates}
+\alias{duplicates}
 \docType{data}
 \title{
 a list containing the names of patients that are believed to be dulicates across

@@ -4,10 +4,18 @@
 \alias{loadOvarianEsets}
 \title{Function to load ovarian cancer expression sets from the Experiment Hub}
 \usage{
-loadOvarianEsets(removeDuplicates = TRUE, quantileCutoff = 0,
-  rescale = FALSE, minNumberGenes = 0, minNumberEvents = 0,
-  minSampleSize = 0, removeRetracted = TRUE, removeSubsets = TRUE,
-  keepCommonOnly = FALSE, imputeMissing = FALSE)
+loadOvarianEsets(
+  removeDuplicates = TRUE,
+  quantileCutoff = 0,
+  rescale = FALSE,
+  minNumberGenes = 0,
+  minNumberEvents = 0,
+  minSampleSize = 0,
+  removeRetracted = TRUE,
+  removeSubsets = TRUE,
+  keepCommonOnly = FALSE,
+  imputeMissing = FALSE
+)
 }
 \arguments{
 \item{removeDuplicates}{remove patients with a Spearman correlation greater than or equal to 0.98 with other patient expression profiles (default TRUE)}
