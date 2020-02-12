@@ -1,7 +1,7 @@
 Package: MetaGxOvarian
 Type: Package
 Title: Transcriptomic Ovarian Cancer Datasets
-Version: 0.99.6
+Version: 1.7.1
 Date: 2020-02-12
 Author: Michael Zon <michaelzon7@gmail.com>, Deena M.A. Gendoo  <deena.gendoo@utoronto.ca>, Benjamin Haibe-Kains <benjamin.haibe.kains@utoronto.ca>
 Maintainer: Michael Zon <michaelzon7@gmail.com>
