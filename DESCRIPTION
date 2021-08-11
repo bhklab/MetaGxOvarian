@@ -1,22 +1,29 @@
 Package: MetaGxOvarian
 Type: Package
 Title: Transcriptomic Ovarian Cancer Datasets
-Version: 1.7.1
-Date: 2020-02-12
+Version: 1.12.1
+Date: `r Sys.date()`
 Authors@R: c(
     person("Michael", "Zon", role=c("aut"), 
         email='michaelzon7@gmail.com'), 
-    person('Deena', 'Gendoo', role=c("aut"), email='deena.gendoo@utoronto.ca'),
+    person('Vandana', 'Sandhu', role=c("aut"), email='vsandhu1987@gmail.com'),
     person('Christopher', 'Eeles', role=c('ctb'), 
         email='christopher.eeles@uhnresearch.ca'),
     person('Benjamin', 'Haibe-Kains', role=c("aut", "cre"),
         email='benjamin.haibe.kains@utoronto.ca'))
 Description: A collection of Ovarian Cancer Transcriptomic Datasets that are part of the MetaGxData package compendium. 
 License: Artistic-2.0
-Depends: Biobase, stats, lattice, impute, AnnotationHub, ExperimentHub, SummarizedExperiment, R (>= 3.6.0)
-Suggests: testthat, xtable
+Depends: 
+    Biobase, 
+    stats, 
+    lattice, 
+    impute, 
+    AnnotationHub, 
+    ExperimentHub, 
+    SummarizedExperiment, 
+    R (>= 3.6.0)
+Suggests: testthat, xtable, rmarkdown, knitr, BiocStyle
 NeedsCompilation: no
 biocViews: ExpressionData, ExperimentHub, CancerData, Homo_sapiens_Data, ArrayExpress, GEO, NCI, MicroarrayData, ExperimentData
 LazyData: yes
-Packaged: 2018-03-12 20:33:41 UTC; Michael Zon
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1

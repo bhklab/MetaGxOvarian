@@ -19,22 +19,17 @@
 #' @importFrom stats complete.cases sd quantile
 #' @importFrom SummarizedExperiment SummarizedExperiment assays assayNames colData rowData
 #' @examples
-#'
 #' experimentsAndDups = loadOvarianDatasets()
-
-
-loadOvarianDatasets = function(rescale = FALSE, minNumberGenes = 0,
-                            minNumberEvents = 0, minSampleSize = 0,
-                            keepCommonOnly = FALSE, imputeMissing = FALSE, removeDuplicates = FALSE)
+#'
+#' @export
+loadOvarianDatasets <- function(
+    rescale = FALSE, minNumberGenes = 0, minNumberEvents = 0, minSampleSize = 0,
+    keepCommonOnly = FALSE, imputeMissing = FALSE, removeDuplicates = FALSE)
 {
-  duplicates = NULL
-  #if(getRversion() >= "2.15.1")  utils::globalVariables(c("."), add = F)
-  ## -----------------------------------------------------------------------------
-  ## needed functions
-  ## -----------------------------------------------------------------------------
+  duplicates <- NULL
 
   ##recursive intersect function
-  intersectMany <- function(lst){
+  intersectMany <- function(lst) {
     ## Find the intersection of multiple vectors stored as elements of a
     ## list, through a tail-recursive function.
     if (length(lst)==2){
@@ -44,14 +39,11 @@ loadOvarianDatasets = function(rescale = FALSE, minNumberGenes = 0,
     }
   }
 
-
   ## -----------------------------------------------------------------------------
   ##load the summarizedExperiments
   ## -----------------------------------------------------------------------------
 
-  hub = ExperimentHub::ExperimentHub()
-  #AnnotationHub::possibleDates(hub)
-  #query(eh, c("MetaGxOvarian", "SummarizedExperiment"))
+  hub <- ExperimentHub::ExperimentHub()
   ovarianData = query(hub, c("MetaGxOvarian", "SummarizedExperiment"))
   dataList <- list()
   for(i in seq_len(length(ovarianData)))
@@ -86,7 +78,7 @@ loadOvarianDatasets = function(rescale = FALSE, minNumberGenes = 0,
     data <- dataList[[i]]
     include = TRUE
     ##rescale to z-scores
-    if(rescale == TRUE){
+    if(rescale == TRUE) {
       SummarizedExperiment::assay(data) = t(scale(t(SummarizedExperiment::assay(data))))
       }
 
@@ -101,59 +93,62 @@ loadOvarianDatasets = function(rescale = FALSE, minNumberGenes = 0,
 
     ##include study if it has enough samples and events:
 
-      phenoData = colData(data)
-      remData = TRUE
+      phenoData <- colData(data)
+      remData <- TRUE
       if(nrow(phenoData) - sum(is.na(phenoData$vital_status)) >= minNumberEvents) remData = FALSE
       if(nrow(phenoData) - sum(is.na(phenoData$recurrence_status)) >= minNumberEvents) remData = FALSE
       if(nrow(phenoData) >= minSampleSize) remData = FALSE
 
-      if(remData == TRUE){
+      if(remData == TRUE) {
         message(paste("excluding", names(dataList)[i], "(minNumberEvents or minSampleSize)"))
-        remInds = c(remInds, i)
-        include = FALSE
-
+        remInds <- c(remInds, i)
+        include <- FALSE
       }
 
 
     if(nrow(data) < minNumberGenes) {
-      message(paste("excluding experiment hub dataset",names(dataList)[i],"(minNumberGenes)"))
-      remInds = c(remInds, i)
-      include = FALSE
+      message(paste("excluding experiment hub dataset",
+        names(dataList)[i], "(minNumberGenes)"))
+      remInds <- c(remInds, i)
+      include <- FALSE
 
     }
 
-    if(imputeMissing == TRUE){
-      notNaInds = which(colSums(is.na(SummarizedExperiment::assay(data))) == 0)
-      data = data[, notNaInds]
-      if(length(notNaInds) == 0){
-        message(paste("excluding experiment hub dataset",names(dataList)[i],
-                      "as every patient has at least 1 NA expression value (imputmissing = TRUE)"))
-        remInds = c(remInds, i)
-        include = FALSE
-      }
+    if(imputeMissing == TRUE) {
+        notNaInds <- which(colSums(is.na(SummarizedExperiment::assay(data))) == 0)
+        data <- data[, notNaInds]
+        if (length(notNaInds) == 0) {
+            message(paste("excluding experiment hub dataset",
+                names(dataList)[i], "as every patient has at least 1 NA 
+                expression value (imputmissing = TRUE)"))
+            remInds <- c(remInds, i)
+            include <- FALSE
+        }
     }
 
-    if(include == TRUE) message(paste("including experiment hub dataset",names(dataList)[i]))
-    ##    featureNames(eset) <- make.names(featureNames(eset))  ##should not do this, it is irreversible.
+    if (include == TRUE) message(paste("including experiment hub dataset",
+        names(dataList)[i]))
     dataList[[i]] <- data
     rm(data)
-  }
-  if(length(remInds) > 0) dataList[unique(remInds)] = NULL
+    }
+    if (length(remInds) > 0) dataList[unique(remInds)] <- NULL
 
 
-  ##optionally take the intersection of genes common to all platforms:
-  if(keepCommonOnly & length(dataList) > 0){
-    features.per.dataset <- lapply(dataList, function(x) rowData(x)$EntrezGene.ID)
-    intersect.genes <- intersectMany(features.per.dataset)
-    dataList <- lapply(dataList, function(data){
-      data <- data[which(rowData(data)$EntrezGene.ID %in% intersect.genes), ]
-      return(data)
-    })
-  }
-  if(length(dataList) == 0) warning("input values resulted in no datasets being returned")
+    ##optionally take the intersection of genes common to all platforms:
+    if (keepCommonOnly & length(dataList) > 0) {
+        features.per.dataset <- lapply(dataList, 
+            function(x) rowData(x)$EntrezGene.ID)
+        intersect.genes <- intersectMany(features.per.dataset)
+        dataList <- lapply(dataList, function(data){
+            data <- data[which(rowData(data)$EntrezGene.ID %in% intersect.genes), ]
+            return(data)
+        })
+    }
+    if (length(dataList) == 0)
+        warning("input values resulted in no datasets being returned")
 
 
-  retList = list(dataList, duplicates)
-  names(retList) = c("summarizedExperiments", "duplicates")
-  return(retList)
+    retList <- list(dataList, duplicates)
+    names(retList) <- c("summarizedExperiments", "duplicates")
+    return(retList)
 }

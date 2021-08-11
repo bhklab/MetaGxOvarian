@@ -37,6 +37,6 @@ a vector with patient IDs for the duplicate patients (those with  Spearman corre
 This function returns ovarian cancer datasets from the hub and a vector of patients from the datasets that are duplicates based on a spearman correlation > 0.98
 }
 \examples{
-
 experimentsAndDups = loadOvarianDatasets()
+
 }
