@@ -11,19 +11,24 @@ Authors@R: c(
         email='christopher.eeles@uhnresearch.ca'),
     person('Benjamin', 'Haibe-Kains', role=c("aut", "cre"),
         email='benjamin.haibe.kains@utoronto.ca'))
-Description: A collection of Ovarian Cancer Transcriptomic Datasets that are part of the MetaGxData package compendium. 
+Description: A collection of Ovarian Cancer Transcriptomic Datasets that are 
+    part of the MetaGxData package compendium. 
 License: Artistic-2.0
 Depends: 
     Biobase, 
-    stats, 
-    lattice, 
-    impute, 
     AnnotationHub, 
     ExperimentHub, 
     SummarizedExperiment, 
     R (>= 3.6.0)
+Imports:
+    stats,
+    lattice,
+    impute
 Suggests: testthat, xtable, rmarkdown, knitr, BiocStyle
+Encoding: UTF-8
+VignetteBuilder: knitr
 NeedsCompilation: no
-biocViews: ExpressionData, ExperimentHub, CancerData, Homo_sapiens_Data, ArrayExpress, GEO, NCI, MicroarrayData, ExperimentData
+biocViews: ExpressionData, ExperimentHub, CancerData, Homo_sapiens_Data, 
+    ArrayExpress, GEO, NCI, MicroarrayData, ExperimentData
 LazyData: yes
 RoxygenNote: 7.1.1

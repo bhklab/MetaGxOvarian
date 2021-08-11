@@ -64,16 +64,16 @@ Some example parameters are shown below:
 
 - `keepCommonOnly`: Retain only genes that are common across all platforms loaded (default = FALSE)
 - `minSampleSize`: Retain studies with a minimum sample size (default = 0)
-- ``: Retain studies with a minimum umber of genes (default = 0)
-- Datasets: Retain studies with a minimum number of survival events (default = 0)
+- `minNumberGenes`: Retain studies with a minimum number of genes (default = 0)
+- `minNUmberEvents`: Retain studies with a minimum number of survival events (default = 0)
 - `removeDuplicates`: Remove duplicate samples (default = TRUE)
 
 # Obtaining Sample Counts in Datasets
 
 ```{r sample_number_summary}
-numSamples <- vapply(seq_along(esets), FUN=function(i, esets){
-  length(sampleNames(esets[[i]]))
-  }, numeric(1), esets=esets)
+numSamples <- vapply(seq_along(esets), FUN=function(i, esets) {
+    length(sampleNames(esets[[i]]))
+    }, numeric(1), esets=esets)
 
 
 SampleNumberSummaryAll <- data.frame(NumberOfSamples = numSamples,
