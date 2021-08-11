@@ -24,7 +24,7 @@ Imports:
     stats,
     lattice,
     impute
-Suggests: testthat, xtable, rmarkdown, knitr, BiocStyle
+Suggests: testthat, xtable, rmarkdown, knitr, BiocStyle, markdown
 Encoding: UTF-8
 VignetteBuilder: knitr
 NeedsCompilation: no
