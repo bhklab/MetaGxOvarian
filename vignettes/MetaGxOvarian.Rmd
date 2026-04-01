@@ -28,7 +28,7 @@ output:
   BiocStyle::html_document:
     toc: false
 vignette: >
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{MetaGxOvarian: A Package for Ovarian Cancer Gene Expression Analysis}
 ---
 
